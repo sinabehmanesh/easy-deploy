@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgis
+  namespace: postgis
+spec:
+  selector:
+    matchLabels:
+      app: postgis
+  serviceName: "postgres-headless-svc"
+  replicas: 3
+  template:
+    metadata:
+      labels:
+        app: postgis
+    spec:
+      container:
+      - name: postgis
+        image: postgis/postgis:latest
+        ports:
+        - containerPort: 5432
+          name: pgsql
+      volumeClaimTemplates:
+      - metadata:
+          name: postgis
+        spec:
+          accessModes: [ "ReadWriteOnce" ]
+          storageClassName: "longhorn"
+          resources:
+            requests:
+              storage: 2Gi
